@@ -1,21 +1,56 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { useDispatch, useSelector } from 'src/services/store';
+import { fetchIngredients } from 'src/services/slices/ingredient-slice';
+import { getOrderByNumberApi } from '@api';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams<{ number: string }>();
+  const { items: ingredients } = useSelector((state) => state.ingredients);
+  const currentOrder = useSelector((state) => state.order.currentOrder);
+  const [orderData, setOrderData] = useState<TOrder | null>(
+    currentOrder ?? null
+  );
+  const [isLoadingOrder, setIsLoadingOrder] = useState<boolean>(!currentOrder);
 
-  const ingredients: TIngredient[] = [];
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadOrder = async () => {
+      if (number) {
+        setIsLoadingOrder(true);
+        try {
+          const response = await getOrderByNumberApi(Number(number));
+          if (isMounted) {
+            setOrderData(response.orders[0] ?? null);
+          }
+        } catch {
+          if (isMounted) {
+            setOrderData(null);
+          }
+        } finally {
+          if (isMounted) {
+            setIsLoadingOrder(false);
+          }
+        }
+        return;
+      }
+
+      if (isMounted) {
+        setOrderData(currentOrder ?? null);
+        setIsLoadingOrder(false);
+      }
+    };
+
+    void loadOrder();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentOrder, number]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
@@ -59,7 +94,7 @@ export const OrderInfo: FC = () => {
     };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) {
+  if (isLoadingOrder || !orderInfo) {
     return <Preloader />;
   }
 
