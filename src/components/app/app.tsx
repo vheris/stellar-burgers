@@ -5,7 +5,8 @@ import {
   Route,
   Routes,
   useLocation,
-  useNavigate
+  useNavigate,
+  useParams
 } from 'react-router-dom';
 
 import {
@@ -37,15 +38,16 @@ const ProtectedRoute = ({
   children,
   onlyUnAuth = false
 }: TProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isAuthChecked } = useSelector((state) => state.auth);
   const location = useLocation();
 
-  if (isLoading) {
+  if (!isAuthChecked) {
     return <Preloader />;
   }
 
   if (onlyUnAuth && isAuthenticated) {
-    return <Navigate to='/' replace />;
+    const from = location.state?.from || { pathname: '/' };
+    return <Navigate replace to={from} />;
   }
 
   if (!onlyUnAuth && !isAuthenticated) {
@@ -57,9 +59,13 @@ const ProtectedRoute = ({
 
 const FeedModal = () => {
   const navigate = useNavigate();
+  const { number } = useParams();
 
   return (
-    <Modal title='Детали заказа' onClose={() => navigate(-1)}>
+    <Modal
+      title={`#${String(number).padStart(6, '0')}`}
+      onClose={() => navigate(-1)}
+    >
       <OrderInfo />
     </Modal>
   );
@@ -77,9 +83,13 @@ const IngredientModal = () => {
 
 const ProfileOrderModal = () => {
   const navigate = useNavigate();
+  const { number } = useParams();
 
   return (
-    <Modal title='Детали заказа' onClose={() => navigate(-1)}>
+    <Modal
+      title={`#${String(number).padStart(6, '0')}`}
+      onClose={() => navigate(-1)}
+    >
       <OrderInfo />
     </Modal>
   );

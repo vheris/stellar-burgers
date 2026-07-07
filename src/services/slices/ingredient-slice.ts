@@ -18,7 +18,7 @@ export const fetchIngredients = createAsyncThunk<
   TIngredient[],
   void,
   { rejectValue: string }
->('ingrefients/fetchIngredients', async (_, { rejectWithValue }) => {
+>('ingredients/fetchIngredients', async (_, { rejectWithValue }) => {
   try {
     return await getIngredientsApi();
   } catch (error) {

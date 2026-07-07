@@ -3,16 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from 'src/services/store';
-import { closeOrder, makeOrders } from 'src/services/slices/order-slice';
-import { fetchIngredients } from 'src/services/slices/ingredient-slice';
+import {
+  closeOrder,
+  makeOrders
+} from 'src/services/slices/order-details-slice';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { selectedBun, ingredients, isOrderRequestPending, currentOrder } =
-    useSelector((state) => state.order);
+  const { selectedBun, ingredients } = useSelector(
+    (state) => state.burgerConstructor
+  );
 
+  const { isOrderRequestPending, currentOrder } = useSelector(
+    (state) => state.orderDetails
+  );
   const constructorItems = {
     bun: selectedBun,
     ingredients

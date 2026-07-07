@@ -12,7 +12,7 @@ const getOrders = (orders: TOrder[], status: string): number[] =>
 
 export const FeedInfo: FC = () => {
   const { feedOrders, feedTotal, feedTotalToday } = useSelector(
-    (state) => state.order
+    (state) => state.feed
   );
 
   const orders: TOrder[] = feedOrders;
