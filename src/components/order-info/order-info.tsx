@@ -1,67 +1,36 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient, TOrder } from '@utils-types';
-import { useSelector } from 'src/services/store';
-import { getOrderByNumberApi } from '@api';
+import { TIngredient } from '@utils-types';
+import { useDispatch, useSelector } from 'src/services/store';
+import { getOrderByNumber } from 'src/services/slices/order-details-slice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
+  const dispatch = useDispatch();
+
   const { items: ingredients } = useSelector((state) => state.ingredients);
-  const currentOrder = useSelector((state) => state.orderDetails.currentOrder);
-  const [orderData, setOrderData] = useState<TOrder | null>(
-    currentOrder ?? null
+  const { viewedOrder, isViewedOrderLoading } = useSelector(
+    (state) => state.orderDetails
   );
-  const [isLoadingOrder, setIsLoadingOrder] = useState<boolean>(!currentOrder);
 
   useEffect(() => {
-    let isMounted = true;
+    if (number) {
+      dispatch(getOrderByNumber(Number(number)));
+    }
+  }, [dispatch, number]);
 
-    const loadOrder = async () => {
-      if (number) {
-        setIsLoadingOrder(true);
-        try {
-          const response = await getOrderByNumberApi(Number(number));
-          if (isMounted) {
-            setOrderData(response.orders[0] ?? null);
-          }
-        } catch {
-          if (isMounted) {
-            setOrderData(null);
-          }
-        } finally {
-          if (isMounted) {
-            setIsLoadingOrder(false);
-          }
-        }
-        return;
-      }
-
-      if (isMounted) {
-        setOrderData(currentOrder ?? null);
-        setIsLoadingOrder(false);
-      }
-    };
-
-    void loadOrder();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [currentOrder, number]);
-
-  /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+    if (!viewedOrder || !ingredients.length) return null;
 
-    const date = new Date(orderData.createdAt);
+    const date = new Date(viewedOrder.createdAt);
 
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
     };
 
-    const ingredientsInfo = orderData.ingredients.reduce(
+    const ingredientsInfo = viewedOrder.ingredients.reduce(
       (acc: TIngredientsWithCount, item) => {
         if (!acc[item]) {
           const ingredient = ingredients.find((ing) => ing._id === item);
@@ -86,14 +55,14 @@ export const OrderInfo: FC = () => {
     );
 
     return {
-      ...orderData,
+      ...viewedOrder,
       ingredientsInfo,
       date,
       total
     };
-  }, [orderData, ingredients]);
+  }, [viewedOrder, ingredients]);
 
-  if (isLoadingOrder || !orderInfo) {
+  if (isViewedOrderLoading || !orderInfo) {
     return <Preloader />;
   }
 

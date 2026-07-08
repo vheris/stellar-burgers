@@ -162,7 +162,14 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <div className={styles.detailPageWrap}>
+              <IngredientDetails />
+            </div>
+          }
+        />
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
