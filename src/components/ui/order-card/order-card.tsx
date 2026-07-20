@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   CurrencyIcon,
   FormattedDate
@@ -12,6 +12,22 @@ import { OrderStatus } from '@components';
 
 export const OrderCardUI: FC<OrderCardUIProps> = memo(
   ({ orderInfo, maxIngredients, locationState }) => (
+    <OrderCardContent
+      orderInfo={orderInfo}
+      maxIngredients={maxIngredients}
+      locationState={locationState}
+    />
+  )
+);
+
+const OrderCardContent: FC<OrderCardUIProps> = ({
+  orderInfo,
+  maxIngredients,
+  locationState
+}) => {
+  const location = useLocation();
+
+  return (
     <Link
       to={orderInfo.number.toString()}
       relative='path'
@@ -75,5 +91,5 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
         </div>
       </div>
     </Link>
-  )
-);
+  );
+};
