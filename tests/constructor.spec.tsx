@@ -18,7 +18,7 @@ const MOCK_USER = {
 
 test.describe('Проверка конструктора бургеров', () => {
   test.beforeEach(async ({ page }) => {
-    await page.routeFromHAR('./tests/ingredients.har', {
+    await page.routeFromHAR('./tests/hars/ingredients.har', {
       url: '**/api/ingredients',
     });
 
@@ -39,6 +39,7 @@ test.describe('Проверка конструктора бургеров', () =
       
     const modal = page.locator('#modals'); 
     await expect(modal.locator('text=Детали ингредиента')).toBeVisible();
+    await expect(modal.locator('text=Краторная булка N-200i')).toBeVisible();
 
     const closeButton = modal.locator('button').first();
     await closeButton.click();
