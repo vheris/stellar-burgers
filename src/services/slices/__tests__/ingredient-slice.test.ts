@@ -32,7 +32,7 @@ describe('Тестирование ingredient-slice', () => {
   it('должен корректно обрабатывать fetchIngredients.pending', () => {
     const action = { type: fetchIngredients.pending.type };
     const state = reducer(initialState, action);
-    
+
     expect(state.isLoading).toBe(true);
     expect(state.error).toBeNull();
   });
@@ -43,7 +43,7 @@ describe('Тестирование ingredient-slice', () => {
       payload: mockIngredients
     };
     const state = reducer({ ...initialState, isLoading: true }, action);
-    
+
     expect(state.isLoading).toBe(false);
     expect(state.items).toEqual(mockIngredients);
   });
@@ -54,7 +54,7 @@ describe('Тестирование ingredient-slice', () => {
       payload: 'Ошибка сервера'
     };
     const state = reducer({ ...initialState, isLoading: true }, action);
-    
+
     expect(state.isLoading).toBe(false);
     expect(state.error).toBe('Ошибка сервера');
   });

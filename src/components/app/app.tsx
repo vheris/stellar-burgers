@@ -196,13 +196,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchIngredients());
-
-    const accessToken = getCookie('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (accessToken || refreshToken) {
-      dispatch(fetchUser());
-    }
+    dispatch(fetchUser());
   }, [dispatch]);
 
   return (

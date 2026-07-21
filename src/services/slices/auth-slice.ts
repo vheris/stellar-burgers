@@ -132,22 +132,18 @@ const authSlice = createSlice({
     builder
       .addCase(fetchUser.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
         state.isAuthChecked = true;
-        state.error = null;
       })
-      .addCase(fetchUser.rejected, (state, action) => {
+      .addCase(fetchUser.rejected, (state) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
         state.isAuthChecked = true;
-        state.error =
-          action.payload || 'Не удалось получить данные пользователя';
       })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
